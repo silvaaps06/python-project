@@ -114,6 +114,8 @@ all_rooms = [court_yard, kitchen, dorm, glass_room, outside]
 
 all_doors = [door_a, security_guard, door_c, door_d, marble_box]
 
+card_code = 1234
+
 # define which items/rooms are related
 
 object_relations = {
@@ -196,17 +198,6 @@ def get_next_room_of_door(door, current_room):
         if(not current_room == room):
             return room
 
-#def open_item(item_name):
-#    """
-#    From object_relations, find the two rooms connected to the given door.
-#    Return the room that is not the current_room.
-#    """
-#    connected_rooms = object_relations[door["name"]]
-#    for room in connected_rooms:
-#        if(not current_room == room):
-#            return room
-
-
 
 
 def examine_item(item_name):
@@ -223,7 +214,7 @@ def examine_item(item_name):
     current_room = game_state["current_room"]
     next_room = ""
     output = None
-    card_code = 1234
+    
 
     for item in object_relations[current_room["name"]]:
         if(item["name"] == item_name):
@@ -249,12 +240,17 @@ def examine_item(item_name):
                 else:
                     output += "The security guard doesn't let you in."
 
-#            elif (item["type"] == "box"):
-#                print("The box needs a code to be unlocked. You might already have seen it")
-#                submitted_code = input("Enter a four-digit code: ").strip()
-#                if submitted_code == card_code:
-#                    examine_item(marble_box)
-#                else: 
+            elif (item["type"] == "box"):
+                print("The box needs a code to be unlocked. You might already have seen it")
+
+                submitted_code = int(input("Enter a four-digit code: "))
+                while submitted_code != card_code:
+                    print('Sorry, the code is incorrect, you have another try')
+                    submitted_code = int(input("Enter a four-digit code: "))
+                
+                if submitted_code == card_code:
+                    print('The code is correct! The box opens and you find a map inside, which is a solution to go through the glass corridor safely')
+                    print('The map image goes here')
             else:
                 if(item["name"] in object_relations and len(object_relations[item["name"]])>0):
                     item_found = object_relations[item["name"]].pop()
