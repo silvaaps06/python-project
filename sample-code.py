@@ -140,6 +140,8 @@ object_relations = {
 # dict and use the copy to store gameplay state. This 
 # way you can replay the game multiple times.
 
+import PIL
+
 INIT_GAME_STATE = {
     "current_room": court_yard,
     "keys_collected": [],
@@ -152,11 +154,65 @@ def linebreak():
     """
     print("\n\n")
 
+import pygame
+import time
+# activate the pygame library .
+# initiate pygame and give permission
+# to use pygame's functionality.
+
+def im(obj):
+
+    path = '/Users/AnaPSilva/Documents/Ana/Ironhack/Bootcamp/Week1/Project1/python-project/' + str(obj) + '.png'
+    pygame.init()
+    # define the RGB value
+    # for white colour
+    white = (255, 255, 255)
+
+    # assigning values to X and Y variable
+    X = 1328
+    Y = 887
+    # create the display surface object
+    # of specific dimension..e(X, Y).
+    display_surface = pygame.display.set_mode((X, Y ))
+    # set the pygame window name
+    pygame.display.set_caption(str(obj))
+    # create a surface object, image is drawn on it.
+    wanted_image = pygame.image.load(path)
+    # infinite loop
+    x = 10
+    while x :
+        # completely fill the surface object
+        # with white colour
+        display_surface.fill(white)
+        # copying the image surface object
+        # to the display surface object at
+        # (0, 0) coordinate.
+        display_surface.blit(wanted_image, (0, 0))
+        # iterate over the list of Event objects
+        # that was returned by pygame.event.get() method.
+        for event in pygame.event.get() :
+            # if event object type is QUIT
+            # then quitting the pygame
+            # and program both.
+            if event.type == pygame.QUIT :
+                # deactivates the pygame library
+                pygame.quit()
+                # quit the program.
+                quit()
+            # Draws the surface object to the screen.
+            pygame.display.update()
+        time.sleep(1)
+        x = x - 1
+
+# import required module
+import os
+
 def start_game():
     """
     Start the game
     """
     print("You feel cold and wake you in a court yard that you've never been before. You notice you have a card in your hand that reads: ")
+    im('card_im')
     play_room(game_state["current_room"])
 
 def play_room(room):
@@ -167,6 +223,9 @@ def play_room(room):
     """
     game_state["current_room"] = room
     if(game_state["current_room"] == game_state["target_room"]):
+        # play sound
+        file1 = "win_sound.wav"
+        os.system("afplay " + file1)
         print("Congrats! You've just won Squid Game!")
     else:
         print("You are now in " + room["name"])
@@ -228,6 +287,9 @@ def examine_item(item_name):
                     output += "You unlock it with a key you have."
                     next_room = get_next_room_of_door(item, current_room)
                 else:
+                    # play sound
+                    file1 = "nodoor_sound.wav"
+                    os.system("afplay " + file1)
                     output += "It is locked but you don't have the key."
             elif(item["type"] == "doorman"):
                 have_key = False
@@ -250,6 +312,7 @@ def examine_item(item_name):
                 
                 if submitted_code == card_code:
                     print('The code is correct! The box opens and you find a map inside, which is a solution to go through the glass corridor safely')
+                    im('mapglass_im')
                     print('The map image goes here')
             else:
                 if(item["name"] in object_relations and len(object_relations[item["name"]])>0):
@@ -265,6 +328,9 @@ def examine_item(item_name):
         print("The item you requested is not found in the current room.")
     
     if(next_room and input("Do you want to go to the next room? Enter 'yes' or 'no'").strip() == 'yes'):
+        # play sound
+        file1 = "door_sound.wav"
+        os.system("afplay " + file1)
         play_room(next_room)
     else:
         play_room(current_room)
