@@ -1,32 +1,37 @@
 # define rooms and items
 
-couch = {
-    "name": "couch",
+doll = {
+    "name": "creepy doll",
     "type": "furniture",
 }
 
-piano = {
-    "name": "piano",
+stove = {
+    "name": "stove",
     "type": "furniture",
 }
 
-queen_bed = {
-    "name": "queen bed",
+bunk_bed1 = {
+    "name": "first bunkbed",
     "type": "furniture",
 }
 
-double_bed = {
-    "name": "double bed",
+bunk_bed2 = {
+    "name": "second bunkbed",
     "type": "furniture",
 }
 
-dresser = {
-    "name": "dresser",
-    "type": "furniture",
+marble_box = {
+    "name": "box with marbles",
+    "type": "box",
 }
 
-table = {
-    "name": "dining table",
+map = {
+    "name": "solution for going through the glass obstacle",
+    "type": "image",
+}
+
+glass_squares = {
+    "name": "glass corridor",
     "type": "furniture",
 }
 
@@ -35,9 +40,9 @@ door_a = {
     "type": "door",
 }
 
-door_b = {
-    "name": "door b",
-    "type": "door",
+security_guard = {
+    "name": "security guard",
+    "type": "doorman",
 }
 
 door_c = {
@@ -56,10 +61,10 @@ key_a = {
     "target": door_a,
 }
 
-key_b = {
-    "name": "key for door b",
+cookie_b = {
+    "name": "cookie for the security guard",
     "type": "key",
-    "target": door_b,
+    "target": security_guard,
 }
 
 key_c = {
@@ -74,23 +79,30 @@ key_d = {
     "target": door_d,
 }
 
-game_room = {
-    "name": "game room",
+#TO USE IF WE CANT MAKE CODE
+# key_box = {
+#   "name": "misterious key",
+#   "type": "key",
+#   "target": marble_box,
+#}
+
+court_yard = {
+    "name": "court yard",
     "type": "room",
 }
 
-bedroom_1 = {
-    "name": "bedroom 1",
+kitchen = {
+    "name": "kitchen",
     "type": "room",
 }
 
-bedroom_2 = {
-    "name": "bedroom 2",
+dorm = {
+    "name": "gamers dorm",
     "type": "room",
 }
 
-living_room = {
-    "name": "living room",
+glass_room = {
+    "name": "glass corridor",
     "type": "room",
 }
 
@@ -98,25 +110,26 @@ outside = {
   "name": "outside"
 }
 
-all_rooms = [game_room, bedroom_1, bedroom_2, living_room, outside]
+all_rooms = [court_yard, kitchen, dorm, glass_room, outside]
 
-all_doors = [door_a, door_b, door_c, door_d]
+all_doors = [door_a, security_guard, door_c, door_d, marble_box]
 
 # define which items/rooms are related
 
 object_relations = {
-    "game room": [couch, piano, door_a],
-    "piano": [key_a],
-    'bedroom 1' : [queen_bed, door_a, door_b, door_c],
-    "queen bed": [key_b],
-    'bedroom 2' : [double_bed, dresser, door_b],
-    "double bed": [key_c],
-    'dresser' : [key_d],
-    'living room' : [table, door_d],
-    "door a": [game_room, bedroom_1],
-    "door b": [bedroom_1, bedroom_2],
-    "door c": [bedroom_1, living_room],
-    "door d": [living_room, outside],
+    "court yard": [doll, door_a],
+    "creepy doll": [key_a],
+    "kitchen" : [stove, door_a, security_guard, door_c],
+    "stove": [cookie_b],
+    'gamers dorm' : [bunk_bed1, bunk_bed2, security_guard],
+    "first bunkbed": [key_c],
+    'second bunkbed' : [key_d],
+    'glass corridor' : [door_d,glass_squares,marble_box],
+    "door a": [court_yard, kitchen],
+    "security guard": [kitchen, dorm],
+    "door c": [kitchen, glass_squares],
+    "door d": [glass_squares, outside],
+    "box with marbles" : [map],
     "outside": [door_d]
 }
 
@@ -126,7 +139,7 @@ object_relations = {
 # way you can replay the game multiple times.
 
 INIT_GAME_STATE = {
-    "current_room": game_room,
+    "current_room": court_yard,
     "keys_collected": [],
     "target_room": outside
 }
@@ -141,7 +154,7 @@ def start_game():
     """
     Start the game
     """
-    print("You wake up on a couch and find yourself in a strange house with no windows which you have never been to before. You don't remember why you are here and what had happened before. You feel some unknown danger is approaching and you must get out of the house, NOW!")
+    print("You feel cold and wake you in a court yard that you've never been before. You notice you have a card in your hand that reads: ")
     play_room(game_state["current_room"])
 
 def play_room(room):
@@ -152,17 +165,17 @@ def play_room(room):
     """
     game_state["current_room"] = room
     if(game_state["current_room"] == game_state["target_room"]):
-        print("Congrats! You escaped the room!")
+        print("Congrats! You've just won Squid Game!")
     else:
         print("You are now in " + room["name"])
-        intended_action = input("What would you like to do? Type 'explore' or 'examine'?").strip()
-        if intended_action == "explore":
+        intended_action = input("What would you like to do? Type '1' to explore or '3' to examine?").strip()
+        if intended_action == "1":
             explore_room(room)
             play_room(room)
-        elif intended_action == "examine":
+        elif intended_action == "3":
             examine_item(input("What would you like to examine?").strip())
         else:
-            print("Not sure what you mean. Type 'explore' or 'examine'.")
+            print("Not sure what you mean. Type '1' or '3'.")
             play_room(room)
         linebreak()
 
@@ -183,9 +196,22 @@ def get_next_room_of_door(door, current_room):
         if(not current_room == room):
             return room
 
+#def open_item(item_name):
+#    """
+#    From object_relations, find the two rooms connected to the given door.
+#    Return the room that is not the current_room.
+#    """
+#    connected_rooms = object_relations[door["name"]]
+#    for room in connected_rooms:
+#        if(not current_room == room):
+#            return room
+
+
+
+
 def examine_item(item_name):
     """
-    Examine an item which can be a door or furniture.
+    Examine an item which can be a door, furniture or a box to be opened.
     First make sure the intended item belongs to the current room.
     Then check if the item is a door. Tell player if key hasn't been 
     collected yet. Otherwise ask player if they want to go to the next
@@ -197,7 +223,8 @@ def examine_item(item_name):
     current_room = game_state["current_room"]
     next_room = ""
     output = None
-    
+    card_code = 1234
+
     for item in object_relations[current_room["name"]]:
         if(item["name"] == item_name):
             output = "You examine " + item_name + ". "
@@ -211,6 +238,23 @@ def examine_item(item_name):
                     next_room = get_next_room_of_door(item, current_room)
                 else:
                     output += "It is locked but you don't have the key."
+            elif(item["type"] == "doorman"):
+                have_key = False
+                for key in game_state["keys_collected"]:
+                    if(key["target"] == item):
+                        have_key = True
+                if(have_key):
+                    output += "You bribe the security guard with the cookie you found. He was happy and let you through the door."
+                    next_room = get_next_room_of_door(item, current_room)
+                else:
+                    output += "The security guard doesn't let you in."
+
+#            elif (item["type"] == "box"):
+#                print("The box needs a code to be unlocked. You might already have seen it")
+#                submitted_code = input("Enter a four-digit code: ").strip()
+#                if submitted_code == card_code:
+#                    examine_item(marble_box)
+#                else: 
             else:
                 if(item["name"] in object_relations and len(object_relations[item["name"]])>0):
                     item_found = object_relations[item["name"]].pop()
