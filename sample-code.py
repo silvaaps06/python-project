@@ -205,6 +205,7 @@ def im(obj):
             # Draws the surface object to the screen.
         time.sleep(5)
         running = False
+        pygame.quit()
         break
         
         #x = x - 1
@@ -236,20 +237,25 @@ def play_room(room):
     """
     game_state["current_room"] = room
     if(game_state["current_room"] == game_state["target_room"]):
+        print("Congrats! You've just won Squid Game!")
         # play sound
         file1 = "win_sound.wav"
         os.system("afplay " + file1)
-        print("Congrats! You've just won Squid Game!")
+        
 
     else:
         print("You are now in " + room["name"])
         intended_action = input("What would you like to do? Type '1' to explore or '3' to examine?").strip()
         if intended_action == "1":
             
-            if room == 'court yard':
+            if room['name'] == 'court yard':
                 im('courtyard_im.png')
-            elif room == 'kitchen':
-                im('cookie.png')
+            elif room['name'] == 'kitchen':
+                im('coockie.png')
+            elif room['name'] == 'gamers dorm':
+                im('dorm_room.png')
+            elif room['name'] == 'glass corridor room':
+                im('glass_room.png')
 
             explore_room(room)
             play_room(room)
@@ -335,7 +341,7 @@ def examine_item(item_name):
                 if submitted_card_code == card_code:
                     print('The code is correct! The box opens and you find a map inside, which is a solution to go through the glass corridor safely')
                     game_state["maps_collected"].append('map') 
-                    im('mapglass_im')
+                    im('mapglass_im.png')
                     
             elif (item["type"] == "obstacle"):
                 if 'map' in game_state["maps_collected"]:
