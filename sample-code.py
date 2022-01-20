@@ -38,11 +38,13 @@ marble_box = {
 
 map = {
     "name": "solution for going through the glass obstacle",
-    "type": "image",
+    "type": "map",
+    "target": 'glass_obstacle_door',
 }
 
 glass_obstacle = {
     "name": "glass obstacle",
+    "type": "obstacle",
 }
 
 door_a = {
@@ -57,6 +59,11 @@ security_guard = {
 
 door_c = {
     "name": "door c",
+    "type": "door",
+}
+
+glass_obstacle_door = {
+    "name": "glass obstacle",
     "type": "door",
 }
 
@@ -89,13 +96,6 @@ key_d = {
     "target": door_d,
 }
 
-#TO USE IF WE CANT MAKE CODE
-# key_box = {
-#   "name": "misterious key",
-#   "type": "key",
-#   "target": marble_box,
-#}
-
 court_yard = {
     "name": "court yard",
     "type": "room",
@@ -122,7 +122,7 @@ outside = {
 
 all_rooms = [court_yard, kitchen, dorm, glass_room, outside]
 
-all_doors = [door_a, security_guard, door_c, door_d, marble_box]
+all_doors = [door_a, security_guard, door_c, door_d, marble_box, glass_obstacle_door]
 
 card_code = 1234
 glass_code = 100110
@@ -135,14 +135,14 @@ object_relations = {
     "kitchen" : [stove, door_a, security_guard, door_c],
     "stove": [cookie_b],
     'gamers dorm' : [bunk_bed1, bunk_bed2, security_guard],
-    "first bunkbed": [key_c],
-    'second bunkbed' : [key_d],
+    'second bunkbed' : [key_c],
     'glass corridor room' : [door_d, glass_obstacle, marble_box],
     "door a": [court_yard, kitchen],
     "security guard": [kitchen, dorm],
-    "door c": [kitchen, glass_obstacle],
-    "door d": [glass_obstacle, outside],
+    "door c": [kitchen, glass_room],
+    "door d": [glass_room, outside],
     "box with marbles" : [map],
+    "glass obstacle" : [],
     "outside": [door_d]
 }
 
@@ -156,6 +156,7 @@ object_relations = {
 INIT_GAME_STATE = {
     "current_room": court_yard,
     "keys_collected": [],
+    "maps_collected": [],
     "target_room": outside
 }
 
@@ -244,6 +245,7 @@ def play_room(room):
         print("You are now in " + room["name"])
         intended_action = input("What would you like to do? Type '1' to explore or '3' to examine?").strip()
         if intended_action == "1":
+            
             if room == 'court yard':
                 im('courtyard_im.png')
             elif room == 'kitchen':
@@ -332,17 +334,23 @@ def examine_item(item_name):
                 
                 if submitted_card_code == card_code:
                     print('The code is correct! The box opens and you find a map inside, which is a solution to go through the glass corridor safely')
+                    game_state["maps_collected"].append('map') 
                     im('mapglass_im')
                     
-                    # if (item["type"] == "image"):
-                    print('You have to walk on the glass corridor to reach the door. Use the map to find the safe squares')
-                    submitted_glass_code = int(input("Enter the code to walk the glass corridor: "))
+            elif (item["type"] == "obstacle"):
+                if 'map' in game_state["maps_collected"]:
+                    print('You have to walk on the glass corridor to reach the door.')
+                    submitted_glass_code = int(input("Enter the code you get in the map to walk the glass corridor: "))
                     while submitted_glass_code != glass_code:
                         print('Ops, you stepped on the wrong square. You can try once again')
                         submitted_glass_code = int(input("Enter the code to walk the glass corridor: "))
-                    
                     if submitted_glass_code == glass_code:
-                        print('Good job! You got to end of the glass corridor and reached the door')
+                        game_state["keys_collected"].append(key_d)
+                        print('Good job! You got to end of the glass corridor and you receive a key as a gift')
+
+                else:
+                    print('Sorry, you can not access the glass corridor. You need to find a map to walk the corridor.')    
+    
 
             else:
                 if(item["name"] in object_relations and len(object_relations[item["name"]])>0):
