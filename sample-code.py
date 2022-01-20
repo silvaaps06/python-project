@@ -1,7 +1,22 @@
+# Issues to solve: 
+# 1. doll image comes to fast. and after it takes a while to continue (not a big problem)
+# 2. map image doesn't pop up
+# 3. sounds - check them in another computer
+# 4. glass corridor room appears as 'glass squares'.. 
+
+# import required modules
+import os
+import PIL
+import pygame
+import time
+import git
+
+# print(os.getcwd())
+
 # define rooms and items
 
 doll = {
-    "name": "creepy doll",
+    "name": "doll",
     "type": "furniture",
 }
 
@@ -31,7 +46,7 @@ map = {
 }
 
 glass_squares = {
-    "name": "glass corridor",
+    "name": "glass squares",
     "type": "furniture",
 }
 
@@ -102,7 +117,7 @@ dorm = {
 }
 
 glass_room = {
-    "name": "glass corridor",
+    "name": "glass corridor room",
     "type": "room",
 }
 
@@ -115,18 +130,19 @@ all_rooms = [court_yard, kitchen, dorm, glass_room, outside]
 all_doors = [door_a, security_guard, door_c, door_d, marble_box]
 
 card_code = 1234
+glass_code = 100110
 
 # define which items/rooms are related
 
 object_relations = {
     "court yard": [doll, door_a],
-    "creepy doll": [key_a],
+    "doll": [key_a],
     "kitchen" : [stove, door_a, security_guard, door_c],
     "stove": [cookie_b],
     'gamers dorm' : [bunk_bed1, bunk_bed2, security_guard],
     "first bunkbed": [key_c],
     'second bunkbed' : [key_d],
-    'glass corridor' : [door_d,glass_squares,marble_box],
+    'glass corridor room' : [door_d, glass_squares, marble_box],
     "door a": [court_yard, kitchen],
     "security guard": [kitchen, dorm],
     "door c": [kitchen, glass_squares],
@@ -140,7 +156,7 @@ object_relations = {
 # dict and use the copy to store gameplay state. This 
 # way you can replay the game multiple times.
 
-import PIL
+
 
 INIT_GAME_STATE = {
     "current_room": court_yard,
@@ -154,15 +170,23 @@ def linebreak():
     """
     print("\n\n")
 
-import pygame
-import time
-# activate the pygame library .
-# initiate pygame and give permission
-# to use pygame's functionality.
+
+def start_game():
+    """
+    Start the game
+    """
+    print("You feel cold and wake you in a courtyard where you've never been before.") 
+    print("You see a creepy doll in the middle of the courtyard. She has a card: remember what the card says!")
+    
+    im('card_im')
+    play_room(game_state["current_room"])
+
+
 
 def im(obj):
 
-    path = '/Users/AnaPSilva/Documents/Ana/Ironhack/Bootcamp/Week1/Project1/python-project/' + str(obj) + '.png'
+    pwd_path= os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(pwd_path, str(obj) + '.png')
     pygame.init()
     # define the RGB value
     # for white colour
@@ -204,16 +228,6 @@ def im(obj):
         time.sleep(1)
         x = x - 1
 
-# import required module
-import os
-
-def start_game():
-    """
-    Start the game
-    """
-    print("You feel cold and wake you in a court yard that you've never been before. You notice you have a card in your hand that reads: ")
-    im('card_im')
-    play_room(game_state["current_room"])
 
 def play_room(room):
     """
@@ -227,6 +241,7 @@ def play_room(room):
         file1 = "win_sound.wav"
         os.system("afplay " + file1)
         print("Congrats! You've just won Squid Game!")
+
     else:
         print("You are now in " + room["name"])
         intended_action = input("What would you like to do? Type '1' to explore or '3' to examine?").strip()
@@ -240,12 +255,14 @@ def play_room(room):
             play_room(room)
         linebreak()
 
+
 def explore_room(room):
     """
     Explore a room. List all items belonging to this room.
     """
     items = [i["name"] for i in object_relations[room["name"]]]
     print("You explore the room. This is " + room["name"] + ". You find " + ", ".join(items))
+
 
 def get_next_room_of_door(door, current_room):
     """
@@ -256,7 +273,6 @@ def get_next_room_of_door(door, current_room):
     for room in connected_rooms:
         if(not current_room == room):
             return room
-
 
 
 def examine_item(item_name):
@@ -305,15 +321,25 @@ def examine_item(item_name):
             elif (item["type"] == "box"):
                 print("The box needs a code to be unlocked. You might already have seen it")
 
-                submitted_code = int(input("Enter a four-digit code: "))
-                while submitted_code != card_code:
+                submitted_card_code = int(input("Enter a four-digit code: "))
+                while submitted_card_code != card_code:
                     print('Sorry, the code is incorrect, you have another try')
-                    submitted_code = int(input("Enter a four-digit code: "))
+                    submitted_card_code = int(input("Enter a four-digit code: "))
                 
-                if submitted_code == card_code:
+                if submitted_card_code == card_code:
                     print('The code is correct! The box opens and you find a map inside, which is a solution to go through the glass corridor safely')
                     im('mapglass_im')
-                    print('The map image goes here')
+                    
+                    # if (item["type"] == "image"):
+                    print('You have to walk on the glass corridor to reach the door. Use the map to find the safe squares')
+                    submitted_glass_code = int(input("Enter the code to walk the glass corridor: "))
+                    while submitted_glass_code != glass_code:
+                        print('Ops, you stepped on the wrong square. You can try once again')
+                        submitted_glass_code = int(input("Enter the code to walk the glass corridor: "))
+                    
+                    if submitted_glass_code == glass_code:
+                        print('Good job! You got to end of the glass corridor and reached the door')
+
             else:
                 if(item["name"] in object_relations and len(object_relations[item["name"]])>0):
                     item_found = object_relations[item["name"]].pop()
@@ -327,7 +353,7 @@ def examine_item(item_name):
     if(output is None):
         print("The item you requested is not found in the current room.")
     
-    if(next_room and input("Do you want to go to the next room? Enter 'yes' or 'no'").strip() == 'yes'):
+    if(next_room and input("Do you want to go to the next room? Enter 'y' for yes or 'n' for no").strip() == 'y'):
         # play sound
         file1 = "door_sound.wav"
         os.system("afplay " + file1)
