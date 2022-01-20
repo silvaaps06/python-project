@@ -30,8 +30,8 @@ map = {
     "type": "image",
 }
 
-glass_squares = {
-    "name": "glass corridor",
+glass_obstacle = {
+    "name": "glass obstacle",
     "type": "furniture",
 }
 
