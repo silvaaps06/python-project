@@ -1,8 +1,3 @@
-# Issues to solve: 
-# 1. doll image comes to fast. and after it takes a while to continue (not a big problem)
-# 2. map image doesn't pop up
-# 3. sounds - check them in another computer
-# 4. glass corridor room appears as 'glass squares'.. 
 
 # import required modules
 import os
@@ -152,7 +147,6 @@ object_relations = {
 # way you can replay the game multiple times.
 
 
-
 INIT_GAME_STATE = {
     "current_room": court_yard,
     "keys_collected": [],
@@ -161,10 +155,7 @@ INIT_GAME_STATE = {
 }
 
 
-
 def im(obj):
-    #pwd_path= os.path.dirname(os.path.abspath(__file__))
-    #path = os.path.join(pwd_path, str(obj) + '.png')
     pygame.init()
     # define the RGB value
     # for white colour
@@ -176,12 +167,9 @@ def im(obj):
     # create the display surface object
     # of specific dimension..e(X, Y).
     display_surface = pygame.display.set_mode((X, Y ))
-    # set the pygame window name
-    #pygame.display.set_caption(str(obj))
     # create a surface object, image is drawn on it.
     wanted_image = pygame.image.load(obj)
     # infinite loop
-    #x = 10
     while running :
         # completely fill the surface object
         # with white colour
@@ -191,24 +179,12 @@ def im(obj):
         # (0, 0) coordinate.
         display_surface.blit(wanted_image, (0, 0))
         pygame.display.update()
-        # iterate over the list of Event objects
-        # that was returned by pygame.event.get() method.
-        #for event in pygame.event.get() :
-            # if event object type is QUIT
-            # then quitting the pygame
-            # and program both.
-            #if event.type == pygame.QUIT :
-                # deactivates the pygame library
-                #pygame.quit()
-                # quit the program.
-                #quit()
             # Draws the surface object to the screen.
         time.sleep(5)
         running = False
+        # deactivates the pygame library
         pygame.quit()
-        break
-        
-        #x = x - 1
+        break      
 
 def linebreak():
     """
@@ -221,8 +197,7 @@ def start_game():
     """
     Start the game
     """
-    print("You feel cold and wake you in a courtyard where you've never been before.") 
-    print("You see a creepy doll in the middle of the courtyard. She has a card: remember what the card says!")
+    print("You feel cold and wake up in a courtyard you've never been before. You notice a card has been placed on your hand. Remember what the card says!") 
     
     im('cardcode_im.png')
     time.sleep(3)
@@ -255,7 +230,7 @@ def play_room(room):
             elif room['name'] == 'gamers dorm':
                 im('dorm_room.png')
             elif room['name'] == 'glass corridor room':
-                im('glass_room.png')
+                im('glassroom_im.png')
 
             explore_room(room)
             play_room(room)
